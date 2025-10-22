@@ -2,13 +2,12 @@
 <html lang="es">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>PLARG Río Gallegos · Información para la comunidad</title>
   <meta name="description" content="Portal ciudadano de la Planta de Tratamiento de Afluentes de Río Gallegos: servicios, avisos, educación ambiental, visitas guiadas y contacto.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>💧</text></svg>">
 
   <style>
-    /* ===================== Base accesible ===================== */
     :root{
       --fg:#0d1b16; --muted:#5a6f66; --bg:#f7faf8; --paper:#ffffff;
       --brand:#1f8f5b; --accent:#1a6ad8; --line:#e5efe9;
@@ -17,7 +16,7 @@
     }
     *{box-sizing:border-box}
     html{scroll-behavior:smooth}
-    html,body{height:100%}
+    html,body{height:100%; overflow-x:hidden} /* FIX: evitar desplazamiento horizontal */
     body{
       margin:0;
       font:16px/1.65 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial;
@@ -48,22 +47,21 @@
     }
     .skip-link:focus{left:10px; top:10px; z-index:999}
     header{
-      position:sticky; top:0; z-index:20;
+      position:sticky; top:0; z-index:50;
       background:#ffffffcc; backdrop-filter:saturate(140%) blur(6px);
       border-bottom:1px solid var(--line);
     }
     .nav{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 0}
-    .brand{display:flex; align-items:center; gap:10px}
-    /* Logo header, tamaño más estético */
+    .brand{display:flex; align-items:center; gap:10px; min-width:0} /* FIX: permite encoger */
     .brand img{width:34px; height:34px; border-radius:10px}
-    .brand .t{display:grid}
-    .brand .t strong{font-size:15px}
+    .brand .t{display:grid; min-width:0}
+    .brand .t strong{font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:52vw} /* FIX: truncar */
     .brand .t small{color:var(--muted); font-size:13px}
 
     /* Contenedor de la derecha = menú + acciones */
-    .nav-right{display:flex; align-items:center; gap:12px}
+    .nav-right{display:flex; align-items:center; gap:12px; margin-left:auto; min-width:0} /* FIX */
 
-    nav[aria-label="Principal"]{position:relative}
+    nav[aria-label="Principal"]{position:relative; min-width:0}
     .menu{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
     .menu a{padding:10px 12px; border-radius:999px; text-decoration:none; border:1px solid transparent}
     .menu a:hover{background:#f0f6f2}
@@ -77,7 +75,7 @@
     .menu .actions-mobile{display:none}
 
     .burger{
-      display:none; border:1px solid var(--line); background:#fff; padding:10px 12px; border-radius:10px; line-height:1;
+      display:none; border:1px solid var(--line); background:#fff; padding:10px 12px; border-radius:10px; line-height:1; flex:0 0 auto; /* FIX: no se encoge */
     }
 
     /* ===================== Hero ===================== */
@@ -168,10 +166,12 @@
     }
     @media (max-width:860px){
       .menu{display:none}
+      /* FIX: dropdown ancho completo y bajo el header */
       .menu.open{
-        display:grid; grid-template-columns:1fr; gap:6px;
-        position:absolute; left:0; right:0; top:100%;
-        background:#fff; padding:10px 20px 14px; border-top:1px solid var(--line)
+        display:grid; grid-template-columns:1fr; gap:8px;
+        position:fixed; left:0; right:0; top:var(--menuTop, 64px);
+        background:#fff; padding:14px 20px 18px;
+        border-top:1px solid var(--line); z-index:1000;
       }
       .burger{display:inline-block}
       /* Oculta acciones de la derecha en móvil, muéstralas en el dropdown */
@@ -185,6 +185,17 @@
       .brand img{width:30px; height:30px}
       .btn{padding:11px 14px}
       .menu .actions-mobile{grid-template-columns:1fr} /* botones a ancho completo en móviles chicos */
+    }
+
+    /* FIX: optimización de header para móviles pequeños */
+    @media (max-width:560px){
+      .wrap.nav{padding:0 12px}
+      .brand .t small{display:none}
+      .brand .t strong{font-size:14px; max-width:60vw}
+      .brand img{width:28px; height:28px}
+    }
+    @media (max-width:380px){
+      .brand .t strong{max-width:54vw}
     }
 
     @media (prefers-reduced-motion: reduce){
@@ -225,11 +236,6 @@
     }
 
     /* ===== Visitas guiadas: responsive mejorado ===== */
-    .visitas{
-      background:linear-gradient(120deg,#eaf6ef, #e3f1ea);
-      border:1px solid var(--line); border-radius:14px;
-      display:grid; grid-template-columns: 1fr 1.3fr; gap:16px; padding:16px; align-items:center;
-    }
     .visitas .img-wrap{
       border-radius:12px; border:1px solid var(--line); box-shadow:var(--shadow);
       overflow:hidden; position:relative;
@@ -500,14 +506,43 @@
     // Año en footer
     document.getElementById('y').textContent = new Date().getFullYear();
 
-    // Menú móvil accesible
+    // Menú móvil accesible + posición bajo header
+    const headerEl = document.querySelector('header');
     const burger = document.getElementById('burger');
     const menu = document.getElementById('menu');
-    burger?.addEventListener('click', ()=>{
+
+    function placeMenu() {
+      if (!menu.classList.contains('open')) return;
+      const rect = headerEl.getBoundingClientRect();
+      // top = borde inferior del header (considera sticky y notch)
+      menu.style.setProperty('--menuTop', `${rect.bottom}px`);
+    }
+
+    function closeMenu() {
+      if (!menu.classList.contains('open')) return;
+      menu.classList.remove('open');
+      burger.setAttribute('aria-expanded', 'false');
+    }
+
+    burger?.addEventListener('click', () => {
       const open = menu.classList.toggle('open');
       burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+      placeMenu();
     });
+
+    // Cerrar al click afuera
+    document.addEventListener('click', (e) => {
+      if (!menu.contains(e.target) && !burger.contains(e.target)) closeMenu();
+    });
+
+    // Cerrar con Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeMenu();
+    });
+
+    // Reubicar en scroll/resize (por header sticky)
+    window.addEventListener('resize', placeMenu, { passive: true });
+    window.addEventListener('scroll', placeMenu, { passive: true });
   </script>
 </body>
 </html>
-
