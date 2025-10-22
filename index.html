@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PLARG Río Gallegos · Información para la comunidad</title>
+  <meta name="description" content="Portal ciudadano de la Planta de Tratamiento de Afluentes de Río Gallegos: servicios, avisos, educación ambiental, visitas guiadas y contacto.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>💧</text></svg>">
+
+  <style>
+    /* ===================== Base accesible ===================== */
+    :root{
+      --fg:#0d1b16; --muted:#5a6f66; --bg:#f7faf8; --paper:#ffffff;
+      --brand:#1f8f5b; --accent:#1a6ad8; --line:#e5efe9;
+      --radius:14px; --shadow:0 8px 24px rgba(20,40,30,.08);
+      --maxw:1080px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font:16px/1.65 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial;
+      color:var(--fg); background:var(--bg);
+      -webkit-text-size-adjust:100%;
+      text-rendering:optimizeLegibility;
+    }
+    img{max-width:100%; height:auto; display:block}
+    a{color:inherit}
+    a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible{
+      outline:3px solid color-mix(in srgb, var(--brand) 50%, transparent);
+      outline-offset:2px;
+      border-radius:8px;
+    }
+    .wrap{max-width:var(--maxw); margin:auto; padding:0 20px}
+    h1,h2,h3{letter-spacing:.2px}
+    h2{font-size:clamp(22px,4.5vw,36px); margin:0 0 8px}
+    h3{font-size:clamp(18px,3.8vw,20px); margin:0}
+    p{margin:.4rem 0 0}
+    .muted{color:var(--muted)}
+    .btn{padding:12px 16px; border-radius:12px; border:1px solid var(--line); background:#fff; text-decoration:none; display:inline-block}
+    .btn.primary{background:var(--brand); color:#fff; border-color:transparent}
+    .cta{display:flex; gap:10px; flex-wrap:wrap; margin-top:12px}
+
+    /* ===================== Header / Navbar ===================== */
+    .skip-link{
+      position:absolute; left:-9999px; top:auto; background:#fff; padding:8px 12px; border-radius:8px; border:1px solid var(--line);
+    }
+    .skip-link:focus{left:10px; top:10px; z-index:999}
+    header{
+      position:sticky; top:0; z-index:20;
+      background:#ffffffcc; backdrop-filter:saturate(140%) blur(6px);
+      border-bottom:1px solid var(--line);
+    }
+    .nav{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 0}
+    .brand{display:flex; align-items:center; gap:10px}
+    /* Logo header, tamaño más estético */
+    .brand img{width:34px; height:34px; border-radius:10px}
+    .brand .t{display:grid}
+    .brand .t strong{font-size:15px}
+    .brand .t small{color:var(--muted); font-size:13px}
+
+    /* Contenedor de la derecha = menú + acciones */
+    .nav-right{display:flex; align-items:center; gap:12px}
+
+    nav[aria-label="Principal"]{position:relative}
+    .menu{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+    .menu a{padding:10px 12px; border-radius:999px; text-decoration:none; border:1px solid transparent}
+    .menu a:hover{background:#f0f6f2}
+
+    /* Botones a la derecha del header */
+    .nav-actions{display:flex; align-items:center; gap:8px}
+    .nav-actions .btn{padding:10px 14px; border-radius:12px; border:1px solid var(--line); background:#fff}
+    .nav-actions .btn.primary{background:var(--brand); color:#fff; border-color:transparent}
+
+    /* Versión móvil: acciones dentro del dropdown */
+    .menu .actions-mobile{display:none}
+
+    .burger{
+      display:none; border:1px solid var(--line); background:#fff; padding:10px 12px; border-radius:10px; line-height:1;
+    }
+
+    /* ===================== Hero ===================== */
+    .hero{border-bottom:1px solid var(--line); background:linear-gradient(160deg,#eaf6ef,#e9f3ff)}
+    .hero-grid{display:grid; grid-template-columns: 1fr 1fr; gap:22px; padding:28px 0}
+    .media{border-radius:14px; overflow:hidden; border:1px solid var(--line); box-shadow:var(--shadow); display:grid; place-items:center; padding:10px}
+    /* Tamaño estilizado del isologo del hero */
+    .hero-logo{width:min(100%, clamp(220px, 38vw, 420px)); height:auto; object-fit:contain}
+
+    /* ===================== Secciones Generales ===================== */
+    section{padding:26px 0}
+    .grid{display:grid; gap:16px}
+    .auto-3{grid-template-columns: repeat(auto-fit, minmax(230px, 1fr))}
+    .auto-2{grid-template-columns: repeat(auto-fit, minmax(260px, 1fr))}
+
+    .card{background:var(--paper); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow)}
+    .card .hd{padding:12px 16px; border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:space-between}
+    .card .bd{padding:16px}
+
+    .quick a{display:flex; gap:12px; align-items:center; padding:14px; border:1px solid var(--line); border-radius:12px; text-decoration:none; background:#fff}
+    .quick i{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;background:#eef8f1;color:var(--brand); font-size:20px}
+    .quick a:hover{background:#f7fbf8}
+
+    figure{margin:0}
+    .figure{display:grid; grid-template-rows:auto 1fr}
+    .figure img{border-bottom:1px solid var(--line)}
+    .figure .cap{padding:12px 14px}
+
+    .alert{padding:12px 14px; border-radius:12px; border:1px solid var(--line)}
+    .ok{background:#f1fbf6; color:#145f3a; border-color:#cdeedc}
+    .warn{background:#fff8e7; color:#7a5c12; border-color:#f1e0b5}
+
+    /* ===================== Banner Visitas ===================== */
+    .visitas{
+      background:linear-gradient(120deg,#eaf6ef, #e3f1ea);
+      border:1px solid var(--line); border-radius:14px;
+      display:grid; grid-template-columns: 1fr 1.3fr; gap:16px; padding:16px; align-items:center
+    }
+    .visitas img{border-radius:12px; border:1px solid var(--line); box-shadow:var(--shadow)}
+
+    /* ===================== Footer ===================== */
+    footer.site-footer{
+      margin-top: 28px;
+      background:#fff;
+      border-top: 1px solid var(--line);
+      text-align:center;
+    }
+    .site-footer .ft{padding:28px 0}
+    .ft-grid{
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+      gap:20px;
+      align-items:start;
+      justify-items:center;
+    }
+    .ft-brand{display:grid; gap:10px; justify-items:center}
+    .ft-brand .id{display:flex; align-items:center; gap:10px; justify-content:center}
+    .ft-brand .id img{width:36px; height:36px; border-radius:8px; border:1px solid var(--line)}
+    .ft-brand strong{font-size:15px}
+    .ft-brand p{margin:0; color:var(--muted); font-size:14px}
+
+    .ft-col h4{margin:0 0 8px; font-size:14px; letter-spacing:.2px; color:var(--fg); text-align:center}
+    .ft-links{display:grid; gap:8px; justify-items:center}
+    .ft-links a{text-decoration:none; color:inherit; font-size:14px}
+    .ft-links a:hover{color:var(--brand)}
+
+    .ft-contact{display:grid; gap:6px; font-size:14px; color:var(--muted); justify-items:center; text-align:center}
+    .ft-social{display:flex; gap:8px; margin-top:6px; justify-content:center}
+    .ft-social a{
+      width:36px; height:36px; display:inline-flex; align-items:center; justify-content:center;
+      border:1px solid var(--line); border-radius:10px; background:#fff; text-decoration:none;
+    }
+    .ft-social a:hover{background:#f7fbf8}
+
+    .ft-cta{margin-top:8px; display:flex; gap:8px; flex-wrap:wrap; justify-content:center}
+    .ft-cta .btn{padding:10px 12px; border-radius:10px}
+
+    .ft-legal{
+      margin-top:16px; padding:12px 0;
+      border-top:1px solid var(--line);
+      display:flex; gap:14px; justify-content:center; flex-wrap:wrap;
+      color:var(--muted); font-size:13px;
+    }
+
+    /* ===================== Responsive ===================== */
+    @media (max-width:980px){
+      .cols{grid-template-columns:1fr}
+    }
+    @media (max-width:860px){
+      .menu{display:none}
+      .menu.open{
+        display:grid; grid-template-columns:1fr; gap:6px;
+        position:absolute; left:0; right:0; top:100%;
+        background:#fff; padding:10px 20px 14px; border-top:1px solid var(--line)
+      }
+      .burger{display:inline-block}
+      /* Oculta acciones de la derecha en móvil, muéstralas en el dropdown */
+      .nav-actions{display:none}
+      .menu .actions-mobile{
+        display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:6px;
+      }
+    }
+    @media (max-width:760px){
+      .hero-grid{grid-template-columns:1fr}
+      .brand img{width:30px; height:30px}
+      .btn{padding:11px 14px}
+      .menu .actions-mobile{grid-template-columns:1fr} /* botones a ancho completo en móviles chicos */
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      html{scroll-behavior:auto}
+    }
+
+    /* ===== Footer: mejoras responsive ===== */
+    .foot { padding: 36px 0; }
+    .cols {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 22px;
+    }
+    .foot h4 { margin: 0 0 12px; font-size: 16px; }
+    .list { display: grid; gap: 10px; }
+    .nl input { width: 100%; padding: 12px; border: 1px solid var(--line); border-radius: 10px; }
+    .nl button { margin-top: 8px; }
+
+    .social { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+    .social a {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 40px; height: 40px;
+      border: 1px solid var(--line); border-radius: 10px;
+      background: #fff; text-decoration: none;
+    }
+    .social a:hover { background: #f7fbf8; }
+
+    .legal {
+      display: flex; flex-wrap: wrap; gap: 10px;
+      justify-content: space-between; border-top: 1px solid var(--line);
+      padding: 14px 0; color: var(--muted); font-size: 14px;
+    }
+
+    @media (max-width: 640px) {
+      .foot { padding: 32px 0 20px; }
+      .cols { gap: 18px; }
+      .legal { gap: 14px; }
+    }
+
+    /* ===== Visitas guiadas: responsive mejorado ===== */
+    .visitas{
+      background:linear-gradient(120deg,#eaf6ef, #e3f1ea);
+      border:1px solid var(--line); border-radius:14px;
+      display:grid; grid-template-columns: 1fr 1.3fr; gap:16px; padding:16px; align-items:center;
+    }
+    .visitas .img-wrap{
+      border-radius:12px; border:1px solid var(--line); box-shadow:var(--shadow);
+      overflow:hidden; position:relative;
+      aspect-ratio: 16 / 10;
+      max-height: 360px;
+    }
+    .visitas .img-wrap img{
+      width:100%; height:100%; object-fit:cover; display:block;
+    }
+    @media (max-width: 900px){
+      .visitas{grid-template-columns:1fr; padding:14px}
+      .visitas .img-wrap{aspect-ratio: 16/9; max-height: none}
+    }
+    @media (max-width: 560px){
+      .visitas{gap:12px; padding:12px}
+      .visitas .img-wrap{aspect-ratio: 4/3; border-radius:10px}
+      #visitas .cta .btn{width:100%}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Accesibilidad: salto directo al contenido -->
+  <a href="#inicio" class="skip-link">Saltar al contenido</a>
+
+  <!-- ===== Header ===== -->
+  <header>
+    <div class="wrap nav">
+      <div class="brand">
+        <img src="./Logo-2D-sin-texto.png" alt="Logo PTAR">
+        <div class="t">
+          <strong>PLARG Río Gallegos</strong>
+          <small>Agua limpia, futuro seguro</small>
+        </div>
+      </div>
+
+      <div class="nav-right">
+        <nav aria-label="Principal">
+          <button class="burger" id="burger" aria-label="Menú" aria-expanded="false" aria-controls="menu">☰</button>
+          <div class="menu" id="menu">
+            <!-- Enlaces del menú -->
+            <a href="#inicio">Inicio</a>
+            <a href="#servicios">Servicios</a>
+            <a href="#avisos">Avisos</a>
+            <a href="#visitas">Visitas</a>
+            <a href="#educacion">Educación</a>
+            <a href="#contacto">Contacto</a>
+
+            <!-- Acciones en móvil (aparecen dentro del dropdown) -->
+            <div class="actions-mobile">
+              <a class="btn" href="/Integral/index.html">Inicio</a>
+              <a class="btn primary" href="/Personal/index.html">Portal Operativo</a>
+            </div>
+          </div>
+        </nav>
+
+        <!-- Acciones a la derecha del header (desktop/tablet) -->
+        <div class="nav-actions">
+          <a class="btn" href="/Integral/index.html">Inicio</a>
+          <a class="btn primary" href="/Personal/index.html">Portal Operativo</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== Hero ===== -->
+  <section id="inicio" class="hero">
+    <div class="wrap">
+      <div class="hero-grid">
+        <div>
+          <h2>Información clara para la comunidad</h2>
+          <p class="muted">Consultá servicios, avisos, visitas guiadas y recursos educativos de la planta de tratamiento. Nuestro compromiso es cuidar el estuario y la salud pública.</p>
+          <div class="cta">
+            <a class="btn primary" href="#visitas">Visitas guiadas</a>
+            <a class="btn" href="#tramites">Trámites</a>
+          </div>
+        </div>
+        <div class="media">
+          <!-- Imagen con tamaño estilizado -->
+          <img class="hero-logo" src="./Logo-2D.png" alt="Isologo PTAR Río Gallegos" loading="lazy">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <main class="wrap">
+
+    <!-- ===== Accesos rápidos ===== -->
+    <section class="quick" aria-label="Accesos rápidos">
+      <div class="grid auto-3">
+        <a href="#tramites"><i>📝</i><div><strong>Trámites y consultas</strong><div class="muted">Notas, turnos, solicitudes</div></div></a>
+        <a href="#avisos"><i>🔔</i><div><strong>Avisos del servicio</strong><div class="muted">Trabajos programados</div></div></a>
+        <a href="#contacto"><i>📞</i><div><strong>Atención ciudadana</strong><div class="muted">Teléfonos y horarios</div></div></a>
+      </div>
+    </section>
+
+    <!-- ===== Servicios ===== -->
+    <section id="servicios" aria-labelledby="servicios-hd">
+      <h3 id="servicios-hd">Servicios</h3>
+      <div class="grid auto-3" style="margin-top:10px">
+        <article class="card figure">
+          <img src="servicios.png" alt="Infraestructura de tratamiento" loading="lazy">
+          <div class="cap"><strong>Tratamiento de afluentes</strong><p class="muted">Operación segura y controlada de la PTAR.</p></div>
+        </article>
+        <article class="card figure">
+          <img src="./Monitoreo-de-calidad.png" alt="Laboratorio ambiental" loading="lazy">
+          <div class="cap"><strong>Monitoreo de calidad</strong><p class="muted">Muestreos y reportes de efluente.</p></div>
+        </article>
+        <article class="card figure">
+          <img src="./cartel-educativo.png" alt="Cartel educativo PTAR" loading="lazy">
+          <div class="cap"><strong>Programas educativos</strong><p class="muted">Capacitaciones y material para escuelas.</p></div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ===== Avisos ===== -->
+    <section id="avisos">
+      <h3>Avisos del servicio</h3>
+      <div class="grid auto-2" style="margin-top:10px">
+        <div class="alert ok"><strong>Estado:</strong> Operación normal.</div>
+        <div class="alert warn"><strong>Trabajos:</strong> Mantenimiento en cámara de contacto — viernes de 18:00 a 22:00.</div>
+      </div>
+    </section>
+
+    <!-- ===== Visitas guiadas ===== -->
+    <section id="visitas" aria-labelledby="visitas-hd">
+      <h3 id="visitas-hd">Visitas guiadas a la planta</h3>
+      <div class="visitas" style="margin-top:10px">
+        <div class="img-wrap">
+          <img src="Personal.png" alt="Personal de planta – visitas guiadas" loading="lazy">
+        </div>
+        <div>
+          <p>Ofrecemos recorridos educativos <strong>gratuitos</strong> para escuelas, universidades, organizaciones y vecinos. Conocé cómo tratamos el agua, qué controles realizamos y cómo podés colaborar con el saneamiento.</p>
+          <ul style="margin:8px 0 0 18px" class="muted">
+            <li>Días: miércoles y viernes</li>
+            <li>Horarios: 10:00 y 14:30</li>
+            <li>Duración: 60–75 minutos</li>
+            <li>Cupos: hasta 25 personas por turno</li>
+            <li>Requisitos: DNI, calzado cerrado</li>
+          </ul>
+          <div class="cta" style="margin-top:12px">
+            <a class="btn primary" href="#tramites">Reservar turno</a>
+            <a class="btn" href="#educacion">Descargar guia educativa</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Educación ambiental ===== -->
+    <section id="educacion">
+      <h3>Educación ambiental</h3>
+      <div class="grid auto-3" style="margin-top:10px">
+        <article class="card figure">
+          <img src="./Cartel-Ambiental.png" alt="Cartelería ambiental: Cuidemos el agua" loading="lazy">
+          <div class="cap"><strong>Cuidemos el agua</strong><p class="muted">Señalética para escuelas y espacios públicos.</p></div>
+        </article>
+        <article class="card figure">
+          <img src="botella.png" alt="Botellas reutilizables con lema Agua limpia, futuro seguro" loading="lazy">
+          <div class="cap"><strong>Campaña de reuso</strong><p class="muted">Botellas institucionales: Agua limpia, futuro seguro.</p></div>
+        </article>
+        <article class="card figure">
+          <img src="folleto.png" alt="Folleto objetivo, misión y visión" loading="lazy">
+          <div class="cap"><strong>Material didáctico</strong><p class="muted">Folleto con objetivo, misión y visión.</p></div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ===== Trámites ===== -->
+    <section id="tramites">
+      <h3>Trámites y consultas</h3>
+      <div class="card" style="margin-top:10px">
+        <div class="bd">
+          <form class="grid auto-2" onsubmit="event.preventDefault(); alert('¡Gracias! Responderemos a tu consulta.');">
+            <label>Nombre<br><input required style="width:100%; padding:12px; border:1px solid var(--line); border-radius:10px"></label>
+            <label>Email<br><input type="email" required style="width:100%; padding:12px; border:1px solid var(--line); border-radius:10px"></label>
+            <label style="grid-column:1/-1">Mensaje<br><textarea required rows="4" style="width:100%; padding:12px; border:1px solid var(--line); border-radius:10px"></textarea></label>
+            <div><button class="btn primary" type="submit">Enviar</button></div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Contacto ===== -->
+    <section id="contacto">
+      <h3>Contacto</h3>
+      <div class="grid auto-3" style="margin-top:10px">
+        <div class="card"><div class="bd"><strong>Atención</strong><p class="muted">0800-PLARG-444 · Lun a vie 9–17 hs</p></div></div>
+        <div class="card"><div class="bd"><strong>Guardia 24 hs</strong><p class="muted">(2966) 123-456</p></div></div>
+        <div class="card"><div class="bd"><strong>Email</strong><p class="muted">info@ptar-riogallegos.gob.ar</p></div></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===== Footer ===== -->
+  <footer class="site-footer">
+    <div class="wrap ft">
+      <div class="ft-grid">
+
+        <!-- Marca + mini misión -->
+        <div class="ft-brand">
+          <div class="id">
+            <img src="./Logo-2D-sin-texto.png" alt="Logo PLARG">
+            <div>
+              <strong>PLARG Río Gallegos</strong><br>
+              <small class="muted">Agua limpia, futuro seguro</small>
+            </div>
+          </div>
+          <p>Servicio público de saneamiento con enfoque en salud y ambiente. Información clara y participación comunitaria.</p>
+          <div class="ft-cta">
+            <a class="btn" href="#visitas">Visitas</a>
+            <a class="btn primary" href="#tramites">Trámites</a>
+          </div>
+        </div>
+
+        <!-- Enlaces -->
+        <div class="ft-col">
+          <h4>Enlaces</h4>
+          <nav class="ft-links" aria-label="Enlaces de pie">
+            <a href="#inicio">Inicio</a>
+            <a href="#servicios">Servicios</a>
+            <a href="#avisos">Avisos</a>
+            <a href="#educacion">Educación</a>
+            <a href="#contacto">Contacto</a>
+          </nav>
+        </div>
+
+        <!-- Contacto -->
+        <div class="ft-col">
+          <h4>Contacto</h4>
+          <div class="ft-contact">
+            <div><b>Atención:</b> Lun–Vie 9–17</div>
+            <div><b>Guardia:</b> 24 hs · (2966) 123-456</div>
+            <div><b>Email:</b> info@ptar-riogallegos.gob.ar</div>
+          </div>
+          <div class="ft-social" aria-label="Redes sociales">
+            <a href="#" aria-label="Facebook">📘</a>
+            <a href="#" aria-label="Instagram">📷</a>
+            <a href="#" aria-label="YouTube">▶️</a>
+            <a href="#" aria-label="LinkedIn">💼</a>
+          </div>
+        </div>
+
+        <!-- Boletín -->
+        <div class="ft-col">
+          <h4>Boletín</h4>
+          <form class="nl" onsubmit="event.preventDefault(); alert('Te suscribiste al boletín.');">
+            <input type="email" placeholder="tu@email.com" required
+                   style="width:100%; padding:12px; border:1px solid var(--line); border-radius:10px">
+            <button class="btn" type="submit" style="margin-top:8px">Suscribirme</button>
+          </form>
+        </div>
+
+      </div>
+
+      <div class="ft-legal">
+        <small>© <span id="y"></span> PLARG Río Gallegos</small>
+        <small>
+          <a href="#" style="color:inherit; text-decoration:none">Privacidad</a> ·
+          <a href="#" style="color:inherit; text-decoration:none">Términos</a> ·
+          <a href="#inicio" style="color:inherit; text-decoration:none">Volver arriba ↑</a>
+        </small>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Año en footer
+    document.getElementById('y').textContent = new Date().getFullYear();
+
+    // Menú móvil accesible
+    const burger = document.getElementById('burger');
+    const menu = document.getElementById('menu');
+    burger?.addEventListener('click', ()=>{
+      const open = menu.classList.toggle('open');
+      burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+  </script>
+</body>
+</html>
